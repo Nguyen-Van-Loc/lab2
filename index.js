@@ -32,6 +32,7 @@ app.post('/', (req, res) => {
             result = number.chia(n1, n2)
             break;
         default:
+            res.write();
             break;
     }
     res.writeHead(200, { "Content-Type": "text/html" });
