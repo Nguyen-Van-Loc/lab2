@@ -3,15 +3,27 @@ const bodiparser = require('body-parser');
 var number = require('./lab2');
 const req = require('express/lib/request');
 const { query } = require('express');
+const expressHbs = require('express-handlebars')
 var app = express();
+app.engine('.hbs', expressHbs.engine({ extname: "hbs", defaultLayout: 'app'}));
+app.set('view engine', '.hbs');
+app.set('views', './views');
+
+const hbs = expressHbs.create({
+    // Specify helpers which are only registered on this instance.
+    helpers: {
+      foo() { return 'FOO!'; },
+      bar() { return 'BAR!'; }
+    }
+  });
 app.get('', (req, res) => {
-    res.sendFile(__dirname + '/app.html')
+    res.render('tong')
 })
 app.use(bodiparser.urlencoded({ extended: true }))
 app.post('/', (req, res) => {
     const n1 = Number(req.body.number1);
     const n2 = Number(req.body.number2);
-    
+
     const pheptinh = req.body.operator;
     let result =0;
     switch (pheptinh) {
@@ -25,19 +37,15 @@ app.post('/', (req, res) => {
             result = number.nhan(n1, n2)
             break;
         case 'chia':
-            if (n2==0) {
-                res.writeHead(404, { "Content-Type": "text/html" });
-                return res.end("So thu 2 Phai khac 0");
-            }
             result = number.chia(n1, n2)
             break;
         default:
-            res.write();
+            res.render();
             break;
     }
-    res.writeHead(200, { "Content-Type": "text/html" });
-    res.write(
-      `<p style="text-align: center; font-size: 25px;">Result: ${result}</p>`
+    res.render(
+        `tong`,
+     {result,n1,n2,t:pheptinh===`tong`,h:pheptinh===`hieu`,t1:pheptinh===`tich`,t2:pheptinh===`chia`,}
     );
 })
 app.listen(3000, (res) = {
